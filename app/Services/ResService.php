@@ -13,10 +13,10 @@ class ResService{
         ]);
     }
 
-    public function errorRess($status, $message, $data = null){
+    public function errorRess($status, $message, $data = null, $code = 500){
         return response()->json([
             'status' => $status,
-            'code'   => '500',
+            'code'   => $code,
             'message'=> $message,
             'data'   => $data
         ]);

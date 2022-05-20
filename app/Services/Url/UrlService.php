@@ -89,13 +89,19 @@ class UrlService{
             }
 
             $data = Url::find($id);
-            $data->name         = $name;
-            $data->short_url    = $shortUrl;
-            $data->original_url = $originalUrl;
-            $data->update();
+            if($data){
+                $data->name         = $name;
+                $data->short_url    = $shortUrl;
+                $data->original_url = $originalUrl;
+                $data->update();
 
-            $shortUrl = url('/').'/'.$data->short_url;
-            return  $this->ress->successRess('success', 'Succes Update Generate Short Url', $shortUrl);
+                $shortUrl = url('/').'/'.$data->short_url;
+                return  $this->ress->successRess('success', 'Succes Update Generate Short Url', $shortUrl);
+            }
+            else{
+                return $this->ress->errorRess('error', 'Update Failed. Id Not Found');
+            }
+
         }
         catch (Exception $error){
             return  $this->ress->errorRess('error', 'Failed Update Generate Short Url');
@@ -110,9 +116,14 @@ class UrlService{
             }
 
             $data = Url::find($id);
-            $data->delete();
+            if($data){
+                $data->delete();
+                return $this->ress->successRess('success', 'Deleted Success');
+            }
+            else{
+                return $this->ress->errorRess('error', 'Deleted Failed. Id Not Found');
+            }
 
-            return $this->ress->successRess('success', 'Deleted Success');
         } catch (Exception $error) {
             return $this->ress->errorRess('error', 'Deleted Failed');
         }
@@ -127,11 +138,11 @@ class UrlService{
                 return Redirect::to($data->original_url);
             }
             else{
-                return $this->ress->errorRess('error', 'Url Not Found');
+                return $this->ress->errorRess('error', 'Url Not Found', null, 404);
             }
 
         } catch (Exception $error) {
-            return $this->ress->errorRess('error', 'Url Not Found');
+            return $this->ress->errorRess('error', 'Url Not Found', null, 404);
         }
     }
 
