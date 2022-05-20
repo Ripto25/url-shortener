@@ -19,7 +19,9 @@ Route::get('/', function () {
 });
 
 Route::get('/{url}', function ($url) {
-    $data = Url::where('short_url', $url)->first();
+    $data = Url::where('short_url', $url)
+        ->where('deleted_at', null)
+        ->first();
     return Redirect::to($data->original_url);
 });
 

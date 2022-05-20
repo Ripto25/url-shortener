@@ -2,10 +2,14 @@
 namespace App\Services\Auth;
 
 use App\Models\User;
+use App\Services\ResService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService{
+    public function __construct(ResService $ress){
+        $this->ress = $ress;
+    }
 
     public function register($request){
         try {
@@ -71,10 +75,6 @@ class AuthService{
 
     public function logout(){
         auth()->user()->tokens()->delete();
-        return response()->json([
-            'status'  => 'success',
-            'code'    => 200,
-            'message' => 'Logout Success'
-        ]);
+        return $this->ress->successRess('success', 'Logout Success');
     }
 }

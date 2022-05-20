@@ -3,9 +3,7 @@ namespace App\Http\Controllers\Url;
 
 use App\Http\Controllers\Controller;
 use App\Services\Url\UrlService;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class UrlController extends controller
 {
@@ -30,10 +28,6 @@ class UrlController extends controller
 
     public function delete(Request $request){
         return $this->service->delete($request);
-    }
-
-    public function directUrl($url){
-        dd($url);
     }
 
 }

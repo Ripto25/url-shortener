@@ -12,8 +12,22 @@ class UrlService{
 
     public function list(){
         try {
-            $data = Url::where('userid', Auth::id())->get();
-            return  $this->ress->successRess('success', 'Succes Get Data', $data);
+            $data = Url::where('userid', Auth::id())
+                ->where('deleted_at', null)
+                ->get();
+
+            $arrayData = [];
+            foreach ($data as $item){
+                $newArray = [
+                    'id'         => $item->id,
+                    'name'       => $item->name,
+                    'orginalurl' => $item->original_url,
+                    'shorturl'   => url('/').'/'.$item->short_url,
+                ];
+                array_push($arrayData,$newArray);
+            }
+
+            return  $this->ress->successRess('success', 'Succes Get Data', $arrayData);
         }
         catch (Exception $error){
             return  $this->ress->errorRess('error', 'Failed To Get Data');
@@ -26,7 +40,6 @@ class UrlService{
             $shortUrl    = $request->shorturl;
             $userId      = Auth::id();
             $originalUrl = $request->originalurl;
-            $expiredAt   = $request->expiredat == null ? null : $request->expiredat;
 
             if($originalUrl == null){
                 return  $this->ress->errorRess('error', 'Original Url Must Be Filled');
@@ -44,7 +57,6 @@ class UrlService{
             $data->name         = $name;
             $data->short_url    = $shortUrl;
             $data->original_url = $originalUrl;
-            $data->expired_at   = $expiredAt;
             $data->save();
 
             $shortUrl = url('/').'/'.$data->short_url;
@@ -61,7 +73,6 @@ class UrlService{
             $name        = $request->name == null ? null : $request->name;
             $shortUrl    = $request->shorturl;
             $originalUrl = $request->originalurl;
-            $expiredAt   = $request->expiredat == null ? null : $request->expiredat;
 
             if($id == null){
                 return  $this->ress->errorRess('error', 'Id  Must Be Filled');
@@ -78,7 +89,6 @@ class UrlService{
             $data->name         = $name;
             $data->short_url    = $shortUrl;
             $data->original_url = $originalUrl;
-            $data->expired_at   = $expiredAt;
             $data->update();
 
             $shortUrl = url('/').'/'.$data->short_url;
