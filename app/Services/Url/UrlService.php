@@ -4,6 +4,7 @@ namespace App\Services\Url;
 use App\Models\Url;
 use Illuminate\Support\Facades\Auth;
 use App\Services\ResService;
+use Illuminate\Support\Facades\Redirect;
 
 class UrlService{
     public function __construct(ResService $ress){
@@ -16,13 +17,14 @@ class UrlService{
                 ->where('deleted_at', null)
                 ->get();
 
+            $baseUrl   = url('/').'/';
             $arrayData = [];
             foreach ($data as $item){
                 $newArray = [
                     'id'         => $item->id,
                     'name'       => $item->name,
                     'orginalurl' => $item->original_url,
-                    'shorturl'   => url('/').'/'.$item->short_url,
+                    'shorturl'   => $baseUrl.$item->short_url,
                 ];
                 array_push($arrayData,$newArray);
             }
@@ -40,6 +42,7 @@ class UrlService{
             $shortUrl    = $request->shorturl;
             $userId      = Auth::id();
             $originalUrl = $request->originalurl;
+            $baseUrl     = url('/').'/';
 
             if($originalUrl == null){
                 return  $this->ress->errorRess('error', 'Original Url Must Be Filled');
@@ -59,7 +62,7 @@ class UrlService{
             $data->original_url = $originalUrl;
             $data->save();
 
-            $shortUrl = url('/').'/'.$data->short_url;
+            $shortUrl = $baseUrl.$data->short_url;
             return  $this->ress->successRess('success', 'Succes Generate Short Url', $shortUrl);
         }
         catch (Exception $error){
@@ -99,8 +102,7 @@ class UrlService{
         }
     }
 
-    public function delete($request)
-    {
+    public function delete($request){
         try {
             $id = $request->id;
             if ($id == null) {
@@ -113,6 +115,23 @@ class UrlService{
             return $this->ress->successRess('success', 'Deleted Success');
         } catch (Exception $error) {
             return $this->ress->errorRess('error', 'Deleted Failed');
+        }
+    }
+
+    public function redirect($url){
+        try {
+            $data = Url::where('short_url', $url)
+                ->where('deleted_at', null)
+                ->first();
+            if($data){
+                return Redirect::to($data->original_url);
+            }
+            else{
+                return $this->ress->errorRess('error', 'Url Not Found');
+            }
+
+        } catch (Exception $error) {
+            return $this->ress->errorRess('error', 'Url Not Found');
         }
     }
 

@@ -9,13 +9,12 @@ class UrlController extends controller
 {
     private $service;
 
-    public function __construct(UrlService $service)
-    {
+    public function __construct(UrlService $service){
         $this->service = $service;
     }
 
     public function list(){
-            return $this->service->list();
+        return $this->service->list();
     }
 
     public function store(Request $request){
@@ -28,6 +27,10 @@ class UrlController extends controller
 
     public function delete(Request $request){
         return $this->service->delete($request);
+    }
+
+    public function redirect($url){
+        return $this->service->redirect($url);
     }
 
 }

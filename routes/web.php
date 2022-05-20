@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Url;
+use App\Http\Controllers\Url\UrlController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,10 +18,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/{url}', function ($url) {
-    $data = Url::where('short_url', $url)
-        ->where('deleted_at', null)
-        ->first();
-    return Redirect::to($data->original_url);
-});
+Route::get('/{url}', [UrlController::class, 'redirect'])->name('redirect');
 

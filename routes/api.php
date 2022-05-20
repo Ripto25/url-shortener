@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Url\UrlController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +15,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+    'prefix' => 'auth',
+    'as'     => 'auth.'
+],
+    function () {
+        Route::post('register', [AuthController::class, 'register'])->name('register');
+        Route::post('login', [AuthController::class, 'login'])->name('login');
+        Route::get('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
 });
 
-require 'Api/auth.php';
-require 'Api/url.php';
+Route::group([
+    'prefix'     => 'url',
+    'as'         => 'url.',
+    'middleware' => ['auth:sanctum']
+],
+    function () {
+        Route::get('list', [UrlController::class, 'list'])->name('list');
+        Route::post('store', [UrlController::class, 'store'])->name('store');
+        Route::put('update', [UrlController::class, 'update'])->name('update');
+        Route::delete('delete', [UrlController::class, 'delete'])->name('delete');
+});
+
+
